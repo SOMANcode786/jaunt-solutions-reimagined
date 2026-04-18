@@ -8,6 +8,7 @@ import About from "./pages/About.tsx";
 import Services from "./pages/Services.tsx";
 import Solutions from "./pages/Solutions.tsx";
 import SapBusinessOne from "./pages/SapBusinessOne.tsx";
+import Contact from "./pages/Contact.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/services" element={<Services />} />
           <Route path="/solutions" element={<Solutions />} />
           <Route path="/sap-business-one" element={<SapBusinessOne />} />
+          <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

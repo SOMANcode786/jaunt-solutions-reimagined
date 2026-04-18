@@ -10,6 +10,7 @@ const links = [
   { to: "/services", label: "Services" },
   { to: "/solutions", label: "Solutions" },
   { to: "/sap-business-one", label: "SAP Business One" },
+  { to: "/contact", label: "Contact Us" },
 ];
 
 const Navbar = () => {
