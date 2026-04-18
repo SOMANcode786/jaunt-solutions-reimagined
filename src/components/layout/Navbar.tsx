@@ -10,6 +10,7 @@ const links = [
   { to: "/services", label: "Services" },
   { to: "/solutions", label: "Solutions" },
   { to: "/sap-business-one", label: "SAP Business One" },
+  { to: "/contact", label: "Contact Us" },
 ];
 
 const Navbar = () => {
@@ -57,7 +58,7 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <Button variant="hero" size="sm" asChild>
-            <Link to="/about">
+            <Link to="/contact">
               Let's Talk <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
@@ -94,7 +95,7 @@ const Navbar = () => {
               </NavLink>
             ))}
             <Button variant="hero" className="mt-3" asChild>
-              <Link to="/about" onClick={() => setOpen(false)}>Let's Talk</Link>
+              <Link to="/contact" onClick={() => setOpen(false)}>Let's Talk</Link>
             </Button>
           </div>
         </div>
