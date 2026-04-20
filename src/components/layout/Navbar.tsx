@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import jsLogo from "@/assets/js-logo-1.png";
 
 const links = [
   { to: "/", label: "Home" },
@@ -20,12 +21,15 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-lg">
       <div className="container flex h-18 items-center justify-between py-4">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-dark text-primary-foreground font-display font-bold text-lg shadow-card-soft transition-smooth group-hover:shadow-accent-glow">
+          {/* <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-dark text-primary-foreground font-display font-bold text-lg shadow-card-soft transition-smooth group-hover:shadow-accent-glow">
             J
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="font-display font-bold text-primary text-lg">Jaunt</span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground -mt-0.5">Solutions</span>
+          </div> */}
+          <div className="container flex items-center justify-between">
+            <img
+              className="h-11 md:h-15 w-auto object-contain"
+              src={jsLogo}
+              alt="Jupiter Logo"
+            />
           </div>
         </Link>
 
@@ -40,7 +44,7 @@ const Navbar = () => {
                   "px-4 py-2 text-sm font-medium rounded-md transition-smooth relative",
                   isActive
                     ? "text-primary"
-                    : "text-muted-foreground hover:text-primary"
+                    : "text-muted-foreground hover:text-primary",
                 )
               }
             >
@@ -87,7 +91,7 @@ const Navbar = () => {
                     "px-4 py-3 rounded-md text-sm font-medium transition-smooth",
                     isActive
                       ? "bg-secondary text-primary"
-                      : "text-muted-foreground hover:bg-secondary hover:text-primary"
+                      : "text-muted-foreground hover:bg-secondary hover:text-primary",
                   )
                 }
               >
@@ -95,7 +99,9 @@ const Navbar = () => {
               </NavLink>
             ))}
             <Button variant="hero" className="mt-3" asChild>
-              <Link to="/contact" onClick={() => setOpen(false)}>Let's Talk</Link>
+              <Link to="/contact" onClick={() => setOpen(false)}>
+                Let's Talk
+              </Link>
             </Button>
           </div>
         </div>
