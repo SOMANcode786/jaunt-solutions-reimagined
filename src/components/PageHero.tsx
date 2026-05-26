@@ -30,7 +30,7 @@ const PageHero = ({ eyebrow, title, subtitle, image }: PageHeroProps) => (
     <div className="container relative py-20 md:py-28">
       <span className="eyebrow text-accent">{eyebrow}</span>
 
-      <h1 className="mt-4 max-w-4xl text-4xl md:text-6xl font-display font-bold leading-[1.05] animate-fade-up">
+      <h1 className="mt-4 max-w-3xl text-4xl md:text-4xl font-display font-bold leading-[1.05] animate-fade-up">
         {title}
       </h1>
 

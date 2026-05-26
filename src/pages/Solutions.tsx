@@ -86,12 +86,56 @@ const solutions = [
 
 const Solutions = () => (
   <Layout>
-    <PageHero
-      eyebrow="Solutions"
-      title="Outcome-focused solutions for every part of your business."
-      subtitle="We package our expertise into proven solutions that accelerate transformation — without locking you into a single vendor."
-      image={imgSol}
-    />
+    {/* Hero Section */}
+    <section className="relative h-[420px] md:h-[520px] overflow-hidden bg-gradient-hero text-primary-foreground">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img
+          src={imgSol}
+          alt="Business technology solutions"
+          className="w-full h-full object-cover"
+        />
+
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-transparent" />
+      </div>
+
+      {/* Content */}
+      <div className="container relative h-full flex items-center">
+        <div className="max-w-3xl">
+          {/* Eyebrow */}
+          <span className="text-sm tracking-wide uppercase text-primary-foreground/80">
+            Our Solutions
+          </span>
+
+          {/* Heading */}
+          <h1 className="mt-4 text-4xl md:text-6xl font-bold leading-tight">
+            Smarter systems for{" "}
+            <span className="text-accent">modern businesses.</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="mt-5 max-w-xl text-base md:text-lg text-primary-foreground/85">
+            Delivering scalable solutions across smart infrastructure, ERP,
+            cloud, cybersecurity and AI-powered platforms.
+          </p>
+
+          {/* Buttons */}
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Button variant="hero" size="lg" asChild>
+              <Link to="/services" className="flex items-center gap-2">
+                Explore services
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+
+            <Button variant="heroOutline" size="lg" asChild>
+              <Link to="/about">Learn more</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section className="container py-20">
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

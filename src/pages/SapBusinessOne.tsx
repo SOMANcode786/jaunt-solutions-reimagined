@@ -60,12 +60,56 @@ const why = [
 
 const SapBusinessOne = () => (
   <Layout>
-    <PageHero
-      eyebrow="SAP Business One"
-      title="Run your entire business on a single, intelligent ERP platform."
-      subtitle="SAP Business One unifies finance, sales, inventory, production and analytics — purpose-built for growing companies and delivered by Jaunt's certified consultants."
-      image={sapImage}
-    />
+    {/* Hero Section */}
+    <section className="relative h-[420px] md:h-[520px] overflow-hidden bg-gradient-hero text-primary-foreground">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img
+          src={sapImage}
+          alt="SAP Business One ERP platform"
+          className="w-full h-full object-cover"
+        />
+
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-transparent" />
+      </div>
+
+      {/* Content */}
+      <div className="container relative h-full flex items-center">
+        <div className="max-w-3xl">
+          {/* Eyebrow */}
+          <span className="text-sm tracking-wide uppercase text-primary-foreground/80">
+            SAP Business One
+          </span>
+
+          {/* Heading */}
+          <h1 className="mt-4 text-4xl md:text-6xl font-bold leading-tight">
+            Smarter ERP for{" "}
+            <span className="text-accent">growing businesses.</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="mt-5 max-w-xl text-base md:text-lg text-primary-foreground/85">
+            Streamline finance, inventory, sales and operations with SAP
+            Business One powered by Jaunt Solutions.
+          </p>
+
+          {/* Buttons */}
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Button variant="hero" size="lg" asChild>
+              <Link to="/about" className="flex items-center gap-2">
+                Request a demo
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+
+            <Button variant="heroOutline" size="lg" asChild>
+              <Link to="/services">Explore services</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section className="container py-20 grid lg:grid-cols-2 gap-12 items-center">
       <div className="rounded-2xl overflow-hidden shadow-elevated">

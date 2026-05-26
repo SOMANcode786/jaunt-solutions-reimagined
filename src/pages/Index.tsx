@@ -44,16 +44,16 @@ const services = [
     title: "Custom Software",
     desc: "Web, mobile and enterprise apps built around your processes.",
   },
-  {
-    icon: Shield,
-    title: "Cyber Security",
-    desc: "Threat detection, governance and compliance built-in.",
-  },
-  {
-    icon: Cloud,
-    title: "Cloud & Infrastructure",
-    desc: "Migration, hosting and managed cloud operations.",
-  },
+  // {
+  //   icon: Shield,
+  //   title: "Cyber Security",
+  //   desc: "Threat detection, governance and compliance built-in.",
+  // },
+  // {
+  //   icon: Cloud,
+  //   title: "Cloud & Infrastructure",
+  //   desc: "Migration, hosting and managed cloud operations.",
+  // },
 ];
 
 const industries = [
@@ -105,9 +105,8 @@ const Index = () => {
 
             {/* Description */}
             <p className="mt-5 max-w-xl text-base md:text-lg text-primary-foreground/85">
-              Jaunt Solutions helps growing and enterprise organizations
-              modernize infrastructure, deploy ERPs and ship custom software —
-              end to end.
+              Jaunt Solutions enables organizations to transform their
+              technology landscape, modernizing infrastructure.
             </p>
 
             {/* Buttons */}
@@ -239,28 +238,29 @@ const Index = () => {
             </Link>
           </Button>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {services.map((s) => (
-            <article
-              key={s.title}
-              className="group rounded-2xl border border-border bg-gradient-card p-7 hover:border-accent hover:shadow-elevated hover:-translate-y-1 transition-smooth"
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {services.map((it) => (
+            <Link
+              key={it.title}
+              to={`/services/${it.title.toLowerCase().replace(/\s+/g, "-")}`}
+              className="group rounded-2xl border border-border bg-gradient-card p-6 hover:border-accent hover:shadow-card-soft hover:-translate-y-1 transition-smooth flex flex-col"
             >
-              <div className="h-12 w-12 grid place-items-center rounded-lg bg-accent-soft text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-smooth">
-                <s.icon className="h-6 w-6" />
+              <div className="h-11 w-11 grid place-items-center rounded-lg bg-accent-soft text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-smooth">
+                <it.icon className="h-5 w-5" />
               </div>
-              <h3 className="mt-5 font-display font-semibold text-xl text-primary">
-                {s.title}
+
+              <h3 className="mt-4 font-display font-semibold text-primary">
+                {it.title}
               </h3>
-              <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
-                {s.desc}
+
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {it.desc}
               </p>
-              <Link
-                to="/services"
-                className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:gap-2 transition-smooth"
-              >
+
+              <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-accent group-hover:gap-2 transition-smooth">
                 Learn more <ArrowRight className="h-4 w-4" />
-              </Link>
-            </article>
+              </span>
+            </Link>
           ))}
         </div>
       </section>

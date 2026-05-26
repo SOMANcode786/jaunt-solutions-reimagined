@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
+import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "@/components/layout/Layout";
 import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
   MessageSquare,
   Building2,
   Globe,
+  ArrowRight,
 } from "lucide-react";
 import contactImage from "@/assets/cont.jpg";
 
@@ -38,15 +40,36 @@ const contactSchema = z.object({
 const offices = [
   {
     city: "Headquarters",
-    address: "Jaunt Solutions, Business Bay",
-    region: "United Arab Emirates",
+    address: "Haverhill MA 01835",
+    region: "UNITED STATES",
     icon: Building2,
   },
   {
     city: "Regional Office",
-    address: "Innovation District",
-    region: "South Asia",
     icon: Globe,
+
+    locations: [
+      {
+        country: "AUSTRALIA",
+        address: "Hurstville NSW 2220",
+        phone: "+61 412 785 886",
+      },
+      {
+        country: "MALAYSIA",
+        address: "Menara Kek Seng - Bukit Bintang Kuala Lumpur",
+        phone: "+60 111 310 7913",
+      },
+      {
+        country: "PAKISTAN",
+        address: "Business Center PECHS Block 6, Karachi",
+        phone: "+92 332 006 1100",
+      },
+      {
+        country: "UNITED STATES",
+        address: "Haverhill MA 01835",
+        phone: "+1 9787 051 119",
+      },
+    ],
   },
 ];
 
@@ -54,14 +77,14 @@ const contactChannels = [
   {
     icon: Mail,
     label: "Email",
-    value: "hello@jauntsolutions.com",
+    value: "info@jauntsolutions.com",
     href: "mailto:hello@jauntsolutions.com",
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+971 (0) 000 0000",
-    href: "tel:+9710000000",
+    value: "+1 9787 051 119",
+    href: "tel:+19787051119",
   },
   {
     icon: MessageSquare,
@@ -69,15 +92,16 @@ const contactChannels = [
     value: "sales@jauntsolutions.com",
     href: "mailto:sales@jauntsolutions.com",
   },
-  { icon: Clock, label: "Hours", value: "Mon – Fri · 9:00 – 18:00 GST" },
+  { icon: Clock, label: "Hours", value: "Mon – Fri · 9:00 – 18:00 RST" },
 ];
 
 const Contact = () => {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
 
@@ -88,7 +112,17 @@ const Contact = () => {
       company: String(formData.get("company") || ""),
       subject: String(formData.get("subject") || ""),
       message: String(formData.get("message") || ""),
+      captchaToken,
     };
+
+    if (!captchaToken) {
+      toast({
+        title: "reCAPTCHA required",
+        description: "Please verify that you are not a robot.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const result = contactSchema.safeParse(data);
     if (!result.success) {
@@ -107,25 +141,83 @@ const Contact = () => {
     }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      (e.target as HTMLFormElement).reset();
-      toast({
-        title: "Message sent",
-        description:
-          "Thanks! Our team will get back to you within one business day.",
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "https://jauntsolutions.net";
+      const response = await fetch(`${apiUrl}/api/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    }, 700);
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        toast({
+          title: "Message sent",
+          description: result.message || "Thanks! Our team will get back to you within one business day.",
+        });
+        (e.target as HTMLFormElement).reset();
+      } else {
+        toast({
+          title: "Submission failed",
+          description: result.message || "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Connection error",
+        description: "Could not connect to the server. Please check your internet connection.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <Layout>
-      <PageHero
-        eyebrow="Contact us"
-        title="Let's build something great together."
-        subtitle="Tell us about your project, your challenges or your goals — our team will get back within one business day."
-        image={contactImage}
-      />
+      {/* Hero Section */}
+      <section className="relative h-[420px] md:h-[520px] overflow-hidden bg-gradient-hero text-primary-foreground">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={contactImage}
+            alt="Contact Jaunt Solutions team"
+            className="w-full h-full object-cover"
+          />
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-transparent" />
+        </div>
+
+        {/* Content */}
+        <div className="container relative h-full flex items-center">
+          <div className="max-w-3xl">
+            {/* Eyebrow */}
+            <span className="text-sm tracking-wide uppercase text-primary-foreground/80">
+              Contact us
+            </span>
+
+            {/* Heading */}
+            <h1 className="mt-4 text-4xl md:text-6xl font-bold leading-tight">
+              Let’s build something{" "}
+              <span className="text-accent">great together.</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="mt-5 max-w-xl text-base md:text-lg text-primary-foreground/85">
+              Share your idea, challenge or project — our team will respond
+              within one business day.
+            </p>
+
+          </div>
+        </div>
+      </section>
 
       <section className="container py-20 grid lg:grid-cols-3 gap-10">
         {/* Form */}
@@ -205,6 +297,12 @@ const Contact = () => {
                 <p className="text-sm text-destructive">{errors.message}</p>
               )}
             </div>
+            <div className="sm:col-span-2 pt-2">
+              <ReCAPTCHA
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                onChange={(token) => setCaptchaToken(token)}
+              />
+            </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               <p className="text-xs text-muted-foreground">
                 By submitting, you agree to be contacted about your inquiry.
@@ -282,6 +380,7 @@ const Contact = () => {
       </section>
 
       {/* Offices */}
+      {/* Offices */}
       <section className="border-t border-border bg-secondary/40">
         <div className="container py-20">
           <div className="max-w-2xl">
@@ -292,12 +391,14 @@ const Contact = () => {
               from our regional hubs.
             </p>
           </div>
+
           <div className="mt-12 grid md:grid-cols-2 gap-6">
             {offices.map((o) => (
               <div
                 key={o.city}
                 className="rounded-2xl border border-border bg-card p-7 shadow-card-soft hover:shadow-elevated transition-smooth"
               >
+                {/* Header */}
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <o.icon className="h-5 w-5" />
@@ -306,13 +407,30 @@ const Contact = () => {
                     {o.city}
                   </h3>
                 </div>
+
+                {/* Address */}
                 <div className="mt-5 flex items-start gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4 mt-1 shrink-0" />
                   <div>
                     <div>{o.address}</div>
                     <div className="text-sm">{o.region}</div>
                   </div>
                 </div>
+
+                {/* ✅ Countries Only */}
+                {o.locations && (
+                  <div className="mt-6 border-t border-border pt-4">
+                    <div className="flex flex-wrap gap-2">
+                      {o.locations.map((loc, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium"
+                        >
+                          {loc.country}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

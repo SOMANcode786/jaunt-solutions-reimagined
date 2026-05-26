@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import jsLogo from "@/assets/js-logo-1.png";
+import jsLogo from "@/assets/jaunt-logo.png";
 
 const links = [
   { to: "/", label: "Home" },
