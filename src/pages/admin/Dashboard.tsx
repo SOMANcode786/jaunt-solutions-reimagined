@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { API_URL, authenticatedFetch } from "@/lib/api";
 import { Inbox, MailOpen, Mail } from "lucide-react";
 import {
   LineChart,
@@ -17,10 +18,7 @@ import {
 } from "recharts";
 
 const fetchStats = async () => {
-  const token = localStorage.getItem("adminToken");
-  const response = await fetch("http://localhost:5000/api/admin/stats", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const response = await authenticatedFetch(`${API_URL}/api/admin/stats`);
   if (!response.ok) throw new Error("Failed to fetch stats");
   return response.json();
 };

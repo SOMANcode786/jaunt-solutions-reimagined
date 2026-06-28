@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "zod";
 import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "@/components/layout/Layout";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { API_URL } from "@/lib/api";
 import {
   Mail,
   Phone,
@@ -100,6 +101,12 @@ const Contact = () => {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<ReCAPTCHA>(null);
+
+  const resetCaptcha = () => {
+    captchaRef.current?.reset();
+    setCaptchaToken(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -143,8 +150,7 @@ const Contact = () => {
     setSubmitting(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "https://jauntsolutions.net";
-      const response = await fetch(`${apiUrl}/api/contact`, {
+      const response = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -157,23 +163,30 @@ const Contact = () => {
       if (response.ok && result.success) {
         toast({
           title: "Message sent",
-          description: result.message || "Thanks! Our team will get back to you within one business day.",
+          description:
+            result.message ||
+            "Thanks! Our team will get back to you within one business day.",
         });
         (e.target as HTMLFormElement).reset();
+        resetCaptcha();
       } else {
         toast({
           title: "Submission failed",
-          description: result.message || "Something went wrong. Please try again.",
+          description:
+            result.message || "Something went wrong. Please try again.",
           variant: "destructive",
         });
+        resetCaptcha();
       }
     } catch (error) {
       console.error("Submission error:", error);
       toast({
         title: "Connection error",
-        description: "Could not connect to the server. Please check your internet connection.",
+        description:
+          "Could not connect to the server. Please check your internet connection.",
         variant: "destructive",
       });
+      resetCaptcha();
     } finally {
       setSubmitting(false);
     }
@@ -214,7 +227,6 @@ const Contact = () => {
               Share your idea, challenge or project — our team will respond
               within one business day.
             </p>
-
           </div>
         </div>
       </section>
@@ -298,10 +310,25 @@ const Contact = () => {
               )}
             </div>
             <div className="sm:col-span-2 pt-2">
-              <ReCAPTCHA
-                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                onChange={(token) => setCaptchaToken(token)}
-              />
+              {import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+              import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
+                <ReCAPTCHA
+                  ref={captchaRef}
+                  sitekey={
+                    import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+                    import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
+                    ""
+                  }
+                  onChange={(token) => setCaptchaToken(token)}
+                  onExpired={resetCaptcha}
+                  onErrored={resetCaptcha}
+                />
+              ) : (
+                <div className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded p-3">
+                  ⚠️ reCAPTCHA is not configured. Set the
+                  VITE_RECAPTCHA_SITE_KEY environment variable to enable it.
+                </div>
+              )}
             </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               <p className="text-xs text-muted-foreground">

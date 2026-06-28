@@ -8,39 +8,28 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { API_URL, authenticatedFetch } from "@/lib/api";
 import { MailOpen, Trash2, Reply, Send, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("adminToken");
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-};
-
 const fetchMessages = async () => {
-  const response = await fetch("http://localhost:5000/api/admin/messages", {
-    headers: getAuthHeaders(),
-  });
+  const response = await authenticatedFetch(`${API_URL}/api/admin/messages`);
   if (!response.ok) throw new Error("Failed to fetch messages");
   return response.json();
 };
 
 const markAsRead = async (id: number) => {
-  const response = await fetch(`http://localhost:5000/api/admin/messages/${id}/read`, {
+  const response = await authenticatedFetch(`${API_URL}/api/admin/messages/${id}/read`, {
     method: "PUT",
-    headers: getAuthHeaders(),
   });
   if (!response.ok) throw new Error("Failed to mark as read");
   return response.json();
 };
 
 const deleteMessage = async (id: number) => {
-  const response = await fetch(`http://localhost:5000/api/admin/messages/${id}`, {
+  const response = await authenticatedFetch(`${API_URL}/api/admin/messages/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(),
   });
   if (!response.ok) throw new Error("Failed to delete message");
   return response.json();
@@ -87,9 +76,8 @@ const Messages = () => {
 
   const replyMutation = useMutation({
     mutationFn: async ({ id, subject, message }: { id: number; subject: string; message: string }) => {
-      const response = await fetch(`http://localhost:5000/api/admin/messages/${id}/reply`, {
+      const response = await authenticatedFetch(`${API_URL}/api/admin/messages/${id}/reply`, {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify({ subject, message }),
       });
       if (!response.ok) {

@@ -4,6 +4,8 @@
 
 const sendEmail = async ({ to, subject, html }) => {
   const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL || "Jaunt Solutions <onboarding@resend.dev>";
+
   if (!apiKey) {
     console.warn("RESEND_API_KEY is not defined. Email will be logged to console instead.");
     console.log(`[Mock Email] To: ${to}, Subject: ${subject}`);
@@ -18,7 +20,7 @@ const sendEmail = async ({ to, subject, html }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Jaunt Solutions <onboarding@resend.dev>",
+        from: fromEmail,
         to: Array.isArray(to) ? to : [to],
         subject: subject,
         html: html,
@@ -81,7 +83,7 @@ const sendReplyEmail = async ({ to, subject, message, originalMessage, recipient
       <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #71717a;">
         <p style="font-size: 14px; margin-bottom: 8px;">Best regards,</p>
         <p style="font-size: 14px; font-weight: bold; margin: 0;">Jaunt Solutions Team</p>
-        <p style="font-size: 12px; color: #a1a1aa; margin-top: 4px;">somanamir43@gmail.com</p>
+        <p style="font-size: 12px; color: #a1a1aa; margin-top: 4px;">${process.env.ADMIN_EMAIL || "somanamir43@gmail.com"}</p>
       </div>
       
       <blockquote style="margin: 24px 0 0 0; padding-left: 16px; border-left: 4px solid #e5e7eb; color: #71717a; font-style: italic; font-size: 14px;">

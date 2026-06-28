@@ -1,9 +1,18 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { sendContactEmail } = require("../services/emailService.js");
+const { verifyRecaptcha } = require("../lib/recaptcha.js");
 
 const submitContactForm = async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL) {
+      console.error("Contact submission failed: DATABASE_URL is not configured");
+      return res.status(500).json({
+        success: false,
+        message: "Contact form database is not configured",
+      });
+    }
+
     const { name, email, subject, message, company } = req.body;
 
     // Basic validation
@@ -23,32 +32,11 @@ const submitContactForm = async (req, res) => {
       });
     }
 
-    const captchaToken = req.body.captchaToken;
-    if (!captchaToken) {
-      return res.status(400).json({
+    const captchaResult = await verifyRecaptcha(req.body.captchaToken);
+    if (!captchaResult.success) {
+      return res.status(captchaResult.status).json({
         success: false,
-        message: "reCAPTCHA verification failed: Missing token",
-      });
-    }
-
-    // Verify reCAPTCHA token
-    const verifyResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        secret: process.env.RECAPTCHA_SECRET_KEY,
-        response: captchaToken,
-      }),
-    });
-
-    const verifyData = await verifyResponse.json();
-
-    if (!verifyData.success) {
-      return res.status(400).json({
-        success: false,
-        message: "reCAPTCHA verification failed",
+        message: captchaResult.message,
       });
     }
 

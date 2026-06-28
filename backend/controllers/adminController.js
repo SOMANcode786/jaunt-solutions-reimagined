@@ -1,6 +1,7 @@
 const prisma = require("../lib/prisma.js");
 const { getAdminStats } = require("../services/adminStatsService.js");
 const { sendReplyEmail } = require("../services/emailService.js");
+const { verifyRecaptcha } = require("../lib/recaptcha.js");
 
 // GET ALL CONTACT MESSAGES
 const getAllContacts = async (req, res) => {
@@ -136,31 +137,36 @@ const login = async (req, res) => {
   try {
     const { password, captchaToken } = req.body;
 
-    if (!captchaToken) {
-      return res.status(400).json({
+    // Validate environment variables first to avoid silent failures or open vulnerabilities
+    if (!process.env.ADMIN_PASSWORD) {
+      console.error("Authentication failed: ADMIN_PASSWORD is not configured in environment variables");
+      return res.status(500).json({
         success: false,
-        message: "reCAPTCHA verification failed: Missing token",
+        message: "Admin authentication is not configured on the server",
       });
     }
 
-    // Verify reCAPTCHA token
-    const verifyResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        secret: process.env.RECAPTCHA_SECRET_KEY,
-        response: captchaToken,
-      }),
-    });
+    if (!process.env.JWT_SECRET) {
+      console.error("Authentication failed: JWT_SECRET is not configured in environment variables");
+      return res.status(500).json({
+        success: false,
+        message: "Token service is not configured on the server",
+      });
+    }
 
-    const verifyData = await verifyResponse.json();
-
-    if (!verifyData.success) {
+    // Ensure password is provided and is not empty to prevent comparison of undefined/empty values
+    if (!password || typeof password !== "string" || password.trim() === "") {
       return res.status(400).json({
         success: false,
-        message: "reCAPTCHA verification failed",
+        message: "Password is required",
+      });
+    }
+
+    const captchaResult = await verifyRecaptcha(captchaToken);
+    if (!captchaResult.success) {
+      return res.status(captchaResult.status).json({
+        success: false,
+        message: captchaResult.message,
       });
     }
 
@@ -180,6 +186,7 @@ const login = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
       message: "Server Error",
